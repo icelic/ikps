@@ -50,6 +50,9 @@ headers={
 
 # konacno slanje zahtjeva da se postojecoj slici doda binarna datoteka koju je korisnik unio
 r = requests.put(glance_endpoint + "/v2/images/" + image_id + "/file", headers=headers, data=data)
-# ispis da je proces zavrsen
-print "Image Created!"
+if r.status_code == 204
+	# ispis da je proces zavrsen
+	print "Image Created!"
+else:
+	print "Image creation failed"
 
