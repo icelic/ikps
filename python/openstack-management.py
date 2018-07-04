@@ -6,7 +6,7 @@ import time
 MENU_OPTIONS = [
     "Korisnici",
     "Instance",
-    "Kontinuirano praćenje",
+    "Kontinuirano pracenje",
     "Kraj rada"
 ]
 
@@ -18,7 +18,7 @@ USER_SUBMENU_OPTIONS = [
 INSTANCE_SUBMENU_OPTIONS = [
     "Ispis svih instanci",
     "Ispis svih aktivnih instanci",
-    "Ispis svih instanci s greškom",
+    "Ispis svih instanci s greskom",
     "Ispis svih instanci koje se kreiraju",
     "Ispis svih instanci za nekog korisnika",
     "Natrag"
@@ -50,7 +50,7 @@ def list_instances(filter):
             print(server["name"])
         print("----------------------------------------------------------------------")
     else:
-        print("Netočan argument: " + filter + ".\nArgument mora biti: 'all', 'active', 'error' ili 'build'")
+        print("Netocan argument: " + filter + ".\nArgument mora biti: 'all', 'active', 'error' ili 'build'")
 
 
 def list_instances_for_user(user_id):
@@ -64,7 +64,7 @@ def list_instances_for_user(user_id):
             print(server["name"])
         print("----------------------------------------------------------------------")
     else:
-        print("Netočan argument: " + filter + ".\nArgument mora biti: all, active, error, build ili user id")
+        print("Netocan argument: " + filter + ".\nArgument mora biti: all, active, error, build ili user id")
 
 
 def list_users():
@@ -98,7 +98,7 @@ while(selected_menu_option != str(len(MENU_OPTIONS)-1)):
     print("IZBORNIK:")
     for i, option in enumerate(MENU_OPTIONS):
         print("%d. %s" % (i, option))
-    selected_menu_option = raw_input('Unesite broj željene opcije: ')
+    selected_menu_option = raw_input('Unesite broj zeljene opcije: ')
 
     if selected_menu_option == '0':
         selected_submenu_option = 2000
@@ -107,7 +107,7 @@ while(selected_menu_option != str(len(MENU_OPTIONS)-1)):
             for i, option in enumerate(USER_SUBMENU_OPTIONS):
                 print("%d. %s" % (i, option))
 
-            selected_submenu_option = raw_input('Unesite broj željene opcije: ')
+            selected_submenu_option = raw_input('Unesite broj zeljene opcije: ')
             if selected_submenu_option == '0':
                 list_users()
 
@@ -117,7 +117,7 @@ while(selected_menu_option != str(len(MENU_OPTIONS)-1)):
             print("INSTANCE :")
             for i, option in enumerate(INSTANCE_SUBMENU_OPTIONS):
                 print("%d. %s" % (i, option))
-            selected_submenu_option = raw_input('Unesite broj željene opcije: ')
+            selected_submenu_option = raw_input('Unesite broj zeljene opcije: ')
             if selected_submenu_option == '0':
                 list_instances("all")
             elif selected_submenu_option == '1':
