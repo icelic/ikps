@@ -35,7 +35,7 @@ def list_instances(filter):
         r = requests.get(nova_endpoint + "/servers", headers=headers)
         json_data = r.json()
         print("\n----------------------------------------------------------------------")
-        print("All servers")
+        print("Sve instance")
         print("----------------------------------------------------------------------")
         for server in json_data["servers"]:
             print(server["name"])
@@ -58,7 +58,7 @@ def list_instances_for_user(user_id):
         r = requests.get(nova_endpoint + "/servers", headers=headers)
         json_data = r.json()
         print("\n----------------------------------------------------------------------")
-        print("All servers for user: " + user_id)
+        print("Sve instance za korisnika: " + user_id)
         print("----------------------------------------------------------------------")
         for server in json_data["servers"]:
             print(server["name"])
@@ -71,10 +71,11 @@ def list_users():
     r = requests.get("http://10.30.1.2:5000/v3/users", headers=headers)
     results_json = r.json()
     print("\n----------------------------------------------------------------------")
-    print("Users")
+    print("Korisnici")
     print("----------------------------------------------------------------------")
     for user in results_json["users"]:
-        print repr(user["name"]).ljust(15) + repr(user["id"]).rjust(35)
+        print repr(user["id"]).ljust(30) + repr(user["name"]).rjust(40)
+    print("----------------------------------------------------------------------\n")
 
 
 def servers_changed(old_servers, new_servers):
@@ -94,43 +95,42 @@ for server in json_data["servers"]:
     servers.append(server["name"])
 servers_count = len(servers)
 
-while(selected_menu_option != str(len(MENU_OPTIONS)-1)):
+while(selected_menu_option != str(len(MENU_OPTIONS))):
     print("IZBORNIK:")
     for i, option in enumerate(MENU_OPTIONS):
-        print("%d. %s" % (i, option))
+        print("%d. %s" % (i+1, option))
     selected_menu_option = raw_input('Unesite broj zeljene opcije: ')
 
-    if selected_menu_option == '0':
+    if selected_menu_option == '1':
         selected_submenu_option = 2000
-        while(selected_submenu_option != str(len(USER_SUBMENU_OPTIONS)-1)):
+        while(selected_submenu_option != str(len(USER_SUBMENU_OPTIONS))):
             print("KORISNICI:")
             for i, option in enumerate(USER_SUBMENU_OPTIONS):
-                print("%d. %s" % (i, option))
+                print("%d. %s" % (i+1, option))
 
             selected_submenu_option = raw_input('Unesite broj zeljene opcije: ')
-            if selected_submenu_option == '0':
+            if selected_submenu_option == '1':
                 list_users()
 
-    elif selected_menu_option == '1':
+    elif selected_menu_option == '2':
         selected_submenu_option = 2000
-        while(selected_submenu_option != str(len(INSTANCE_SUBMENU_OPTIONS)-1)):
+        while(selected_submenu_option != str(len(INSTANCE_SUBMENU_OPTIONS))):
             print("INSTANCE :")
             for i, option in enumerate(INSTANCE_SUBMENU_OPTIONS):
-                print("%d. %s" % (i, option))
+                print("%d. %s" % (i+1, option))
             selected_submenu_option = raw_input('Unesite broj zeljene opcije: ')
-            if selected_submenu_option == '0':
+            if selected_submenu_option == '1':
                 list_instances("all")
-            elif selected_submenu_option == '1':
-                list_instances("active")
             elif selected_submenu_option == '2':
-                list_instances("error")
+                list_instances("active")
             elif selected_submenu_option == '3':
-                list_instances("build")
+                list_instances("error")
             elif selected_submenu_option == '4':
+                list_instances("build")
+            elif selected_submenu_option == '5':
                 user_id = input("Unesite id korisnika: ")
                 list_instances(user_id)
-    elif selected_menu_option == '2':
-        print('Kliknite q za povratak')
+    elif selected_menu_option == '3':
         user_input = 'a'
         while user_input != 'q':
             for i in range(10):
@@ -143,5 +143,7 @@ while(selected_menu_option != str(len(MENU_OPTIONS)-1)):
                 if servers_changed(servers, new_servers):
                     print "Server added or removed"
                     servers = new_servers
-                time.sleep(6)
-            user_input = raw_input("Za povratak na izbornik odaberite 'q', a za nastavak 'c': ")
+                time.sleep(30)
+                user_input = raw_input("Za povratak na izbornik odaberite 'q', a za nastavak 'c': ")
+                if user_input == 'q':
+                    break
