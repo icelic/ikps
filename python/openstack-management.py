@@ -34,13 +34,21 @@ def list_instances(filter):
     if filter == 'all':
         r = requests.get(nova_endpoint + "/servers", headers=headers)
         json_data = r.json()
+        print("\n----------------------------------------------------------------------")
+        print("All servers")
+        print("----------------------------------------------------------------------")
         for server in json_data["servers"]:
             print(server["name"])
+        print("----------------------------------------------------------------------")
     elif filter == 'active' or filter == 'error' or filter == 'build':
         r = requests.get(nova_endpoint + "/servers?status=" + filter, headers=headers)
         json_data = r.json()
+        print("\n----------------------------------------------------------------------")
+        print("Servers with status " + filter)
+        print("----------------------------------------------------------------------")
         for server in json_data["servers"]:
             print(server["name"])
+        print("----------------------------------------------------------------------")
     else:
         print("Netočan argument: " + filter + ".\nArgument mora biti: 'all', 'active', 'error' ili 'build'")
 
@@ -49,8 +57,12 @@ def list_instances_for_user(user_id):
     if filter == 'all':
         r = requests.get(nova_endpoint + "/servers", headers=headers)
         json_data = r.json()
+        print("\n----------------------------------------------------------------------")
+        print("All servers for user: " + user_id)
+        print("----------------------------------------------------------------------")
         for server in json_data["servers"]:
             print(server["name"])
+        print("----------------------------------------------------------------------")
     else:
         print("Netočan argument: " + filter + ".\nArgument mora biti: all, active, error, build ili user id")
 
@@ -58,6 +70,9 @@ def list_instances_for_user(user_id):
 def list_users():
     r = requests.get("http://10.30.1.2:5000/v3/users", headers=headers)
     results_json = r.json()
+    print("\n----------------------------------------------------------------------")
+    print("Users")
+    print("----------------------------------------------------------------------")
     for user in results_json["users"]:
         print repr(user["name"]).ljust(15) + repr(user["id"]).rjust(35)
 
