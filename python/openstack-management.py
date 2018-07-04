@@ -7,6 +7,7 @@ MENU_OPTIONS = [
     "Korisnici",
     "Instance",
     "Kontinuirano pracenje",
+    "Statistika",
     "Kraj rada"
 ]
 
@@ -21,6 +22,12 @@ INSTANCE_SUBMENU_OPTIONS = [
     "Ispis svih instanci s greskom",
     "Ispis svih instanci koje se kreiraju",
     "Ispis svih instanci za nekog korisnika",
+    "Natrag"
+]
+
+STATISTICS_SUBMENU_OPTIONS = [
+    "Statistika za sve projekte",
+    "Statistika za odredjen projekt",
     "Natrag"
 ]
 
@@ -44,7 +51,7 @@ def list_instances(filter):
         r = requests.get(nova_endpoint + "/servers?status=" + filter, headers=headers)
         json_data = r.json()
         print("\n----------------------------------------------------------------------")
-        print("Servers with status " + filter)
+        print("Instance sa statusom " + filter)
         print("----------------------------------------------------------------------")
         for server in json_data["servers"]:
             print(server["name"])
@@ -78,12 +85,18 @@ def list_users():
     print("----------------------------------------------------------------------\n")
 
 
+def print_statistics():
+    r = requests.get(nova_endpoint + "/os-simple-tenant-usage", headers=headers)
+    json_data = r.json()
+    print json.dumps(json_data, indent=4, sort_keys=True)
+
+
 def servers_changed(old_servers, new_servers):
     result = set(old_servers) ^ set(new_servers)
     if not result:
         return False
     else:
-        return True 
+        return True
 
 
 servers = []
@@ -154,3 +167,14 @@ while(selected_menu_option != str(len(MENU_OPTIONS))):
                     time.sleep(3)
         except KeyboardInterrupt:
             pass
+    elif selected_menu_option == '4':
+        selected_submenu_option = 2000
+        while(selected_submenu_option != str(len(STATISTICS_SUBMENU_OPTIONS))):
+            print("INSTANCE :")
+            for i, option in enumerate(STATISTICS_SUBMENU_OPTIONS):
+                print("%d. %s" % (i+1, option))
+            selected_submenu_option = raw_input('Unesite broj zeljene opcije: ')
+            if selected_submenu_option == '1':
+                print_statistics()
+            elif selected_submenu_option == '2':
+                print_statistics()
