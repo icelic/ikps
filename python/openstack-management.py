@@ -131,19 +131,26 @@ while(selected_menu_option != str(len(MENU_OPTIONS))):
                 user_id = input("Unesite id korisnika: ")
                 list_instances(user_id)
     elif selected_menu_option == '3':
-        user_input = 'a'
-        while user_input != 'q':
-            for i in range(10):
-                new_servers = []
-                r = requests.get(nova_endpoint + "/servers", headers=headers)
-                json_data = r.json()
-                for server in json_data["servers"]:
-                    new_servers.append(server["name"])
-                servers_count = len(servers)
-                if servers_changed(servers, new_servers):
-                    print "Server added or removed"
-                    servers = new_servers
-                time.sleep(30)
-                user_input = raw_input("Za povratak na izbornik odaberite 'q', a za nastavak 'c': ")
-                if user_input == 'q':
-                    break
+        print("Za prekid ove funkcije pritisnite tipke 'Ctrl' + 'C'")
+        try:
+            while True:
+                for i in range(30):
+                    new_servers = []
+                    r = requests.get(nova_endpoint + "/servers", headers=headers)
+                    json_data = r.json()
+                    for server in json_data["servers"]:
+                        new_servers.append(server["name"])
+                    servers_count = len(servers)
+                    if servers_changed(servers, new_servers):
+                        if len(servers) > len(new_servers):
+                            print("Pobrisana je instanca: ")
+                            for item in list(set(servers) ^ set(new_servers)):
+                                print "\t-" + item
+                        elif len(servers) < len(new_servers):
+                            print("Dodana je instanca: ")
+                            for item in list(set(servers) ^ set(new_servers)):
+                                print "\t-" + item
+                        servers = new_servers
+                    time.sleep(3)
+        except KeyboardInterrupt:
+            pass
