@@ -39,22 +39,30 @@ nova_endpoint = get_endpoint("nova", auth_token)
 
 def list_instances(filter):
     if filter == 'all':
+        instance_count = 0
         r = requests.get(nova_endpoint + "/servers", headers=headers)
         json_data = r.json()
         print("\n----------------------------------------------------------------------")
         print("Sve instance")
         print("----------------------------------------------------------------------")
         for server in json_data["servers"]:
+            instance_count += 1
             print(server["name"])
         print("----------------------------------------------------------------------")
+        print "Broj svih instanci je: " + str(instance_count)
+        print("----------------------------------------------------------------------")
     elif filter == 'active' or filter == 'error' or filter == 'build':
+        instance_count = 0
         r = requests.get(nova_endpoint + "/servers?status=" + filter, headers=headers)
         json_data = r.json()
         print("\n----------------------------------------------------------------------")
         print("Instance sa statusom " + filter)
         print("----------------------------------------------------------------------")
         for server in json_data["servers"]:
+            instance_count += 1
             print(server["name"])
+        print("----------------------------------------------------------------------")
+        print "Broj instanci sa statusom " + filter + " je: " + str(instance_count)
         print("----------------------------------------------------------------------")
     else:
         print("Netocan argument: " + filter + ".\nArgument mora biti: 'all', 'active', 'error' ili 'build'")
@@ -88,7 +96,14 @@ def list_users():
 def print_statistics():
     r = requests.get(nova_endpoint + "/os-simple-tenant-usage", headers=headers)
     json_data = r.json()
-    print json.dumps(json_data, indent=4, sort_keys=True)
+    for tenant in json_data["tenant_usages"]:
+        print("\n----------------------------------------------------------------------")
+        print("Statistika za projekt: " + tenant["tenant_id"])
+        print("----------------------------------------------------------------------")
+        for key, value in tenant.iteritems():
+            if(key != "tenant_id"):
+                print key + ": " + str(value)
+        print("----------------------------------------------------------------------")
 
 
 def servers_changed(old_servers, new_servers):
@@ -176,13 +191,4 @@ while(selected_menu_option != str(len(MENU_OPTIONS))):
         except KeyboardInterrupt:
             pass
     elif selected_menu_option == '4':
-        selected_submenu_option = 2000
-        while(selected_submenu_option != str(len(STATISTICS_SUBMENU_OPTIONS))):
-            print("INSTANCE :")
-            for i, option in enumerate(STATISTICS_SUBMENU_OPTIONS):
-                print("%d. %s" % (i+1, option))
-            selected_submenu_option = raw_input('Unesite broj zeljene opcije: ')
-            if selected_submenu_option == '1':
-                print_statistics()
-            elif selected_submenu_option == '2':
-                print_statistics()
+        print_statistics()
