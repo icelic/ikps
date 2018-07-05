@@ -114,14 +114,16 @@ def servers_changed(old_servers, new_servers):
         return True
 
 
-servers = []
+server_ids = []
 selected_menu_option = 2000
 
 r = requests.get(nova_endpoint + "/servers", headers=headers)
 json_data = r.json()
 for server in json_data["servers"]:
-    servers.append(server["id"])
-servers_count = len(servers)
+    server_ids.append(server["id"])
+    server_names.append(server["name"])
+    server_user_ids.append(server["user_id"])
+servers_count = len(server_ids)
 
 while(selected_menu_option != str(len(MENU_OPTIONS))):
     print("IZBORNIK:")
@@ -163,29 +165,25 @@ while(selected_menu_option != str(len(MENU_OPTIONS))):
         try:
             while True:
                 for i in range(30):
-                    new_servers = []
+                    new_server_ids = []
                     r = requests.get(nova_endpoint + "/servers", headers=headers)
                     json_data = r.json()
                     for server in json_data["servers"]:
-                        new_servers.append(server["name"])
-                    servers_count = len(servers)
-                    if servers_changed(servers, new_servers):
-                        if len(servers) > len(new_servers):
+                        new_server_ids.append(server["id"])
+                        new_server_names.append(server["name"])
+                        new_server_user_ids.append(server["user_id"])
+                    servers_count = len(new_server_ids)
+                    if servers_changed(server_ids, new_server_ids):
+                        if len(server_ids) > len(new_server_ids):
                             print("Pobrisana je instanca: ")
-                            for item in list(set(servers) ^ set(new_servers)):
-                                r = requests.get(nova_endpoint + "/servers/" + item, headers=headers)
-                                server = r.json()
-                                r = requests.get("http://10.30.1.2:5000/v3/users/" + server["user_id"], headers=headers)
-                                user = r.json()
-                                print "\t" + "-" + "Korisnik: " + user["name"] + " --> instanca: " + server["name"]tem
-                        elif len(servers) < len(new_servers):
+                            for item in list(set(server_ids) ^ set(new_server_ids)):
+                                print item
+                                
+                        elif len(server_ids) < len(new_server_ids):
                             print("Dodana je instanca: ")
-                            for item in list(set(servers) ^ set(new_servers)):
-                                r = requests.get(nova_endpoint + "/servers/" + item, headers=headers)
-                                server = r.json()
-                                r = requests.get("http://10.30.1.2:5000/v3/users/" + server["user_id"], headers=headers)
-                                user = r.json()
-                                print "\t" + "-" + "Korisnik: " + user["name"] + " --> instanca: " + server["name"]
+                            for item in list(set(server_ids) ^ set(new_server_ids)):
+                                print item
+                                
                         servers = new_servers
                     time.sleep(3)
         except KeyboardInterrupt:
