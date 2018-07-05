@@ -177,13 +177,13 @@ while(selected_menu_option != str(len(MENU_OPTIONS))):
                         if len(server_ids) > len(new_server_ids):
                             print("Pobrisana je instanca: ")
                             for item in list(set(server_ids) ^ set(new_server_ids)):
-                                print item
-                                
+                                item_index = new_server_ids.index(item)
+                                print server_names(item_index)
                         elif len(server_ids) < len(new_server_ids):
                             print("Dodana je instanca: ")
                             for item in list(set(server_ids) ^ set(new_server_ids)):
-                                print item
-                                
+                                item_index = new_server_ids.index(item)
+                                print server_names(item_index)
                         servers = new_servers
                     time.sleep(3)
         except KeyboardInterrupt:
