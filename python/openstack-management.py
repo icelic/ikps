@@ -105,7 +105,7 @@ selected_menu_option = 2000
 r = requests.get(nova_endpoint + "/servers", headers=headers)
 json_data = r.json()
 for server in json_data["servers"]:
-    servers.append(server["name"])
+    servers.append(server["id"])
 servers_count = len(servers)
 
 while(selected_menu_option != str(len(MENU_OPTIONS))):
@@ -158,11 +158,19 @@ while(selected_menu_option != str(len(MENU_OPTIONS))):
                         if len(servers) > len(new_servers):
                             print("Pobrisana je instanca: ")
                             for item in list(set(servers) ^ set(new_servers)):
-                                print "\t-" + item
+                                r = requests.get(nova_endpoint + "/servers/" + item, headers=headers)
+                                server = r.json()
+                                r = requests.get("http://10.30.1.2:5000/v3/users/" + server["user_id"], headers=headers)
+                                user = r.json()
+                                print "\t" + "-" + "Korisnik: " + user["name"] + " --> instanca: " + server["name"]tem
                         elif len(servers) < len(new_servers):
                             print("Dodana je instanca: ")
                             for item in list(set(servers) ^ set(new_servers)):
-                                print "\t-" + item
+                                r = requests.get(nova_endpoint + "/servers/" + item, headers=headers)
+                                server = r.json()
+                                r = requests.get("http://10.30.1.2:5000/v3/users/" + server["user_id"], headers=headers)
+                                user = r.json()
+                                print "\t" + "-" + "Korisnik: " + user["name"] + " --> instanca: " + server["name"]
                         servers = new_servers
                     time.sleep(3)
         except KeyboardInterrupt:
