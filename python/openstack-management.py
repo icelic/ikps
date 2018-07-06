@@ -65,21 +65,18 @@ def list_instances(filter):
         print "Broj instanci sa statusom " + filter + " je: " + str(instance_count)
         print("----------------------------------------------------------------------")
     else:
-        print("Netocan argument: " + filter + ".\nArgument mora biti: 'all', 'active', 'error' ili 'build'")
+        print("Netocan argument: " + str(filter) + ".\nArgument mora biti: 'all', 'active', 'error' ili 'build'")
 
 
 def list_instances_for_user(user_id):
-    if filter == 'all':
-        r = requests.get(nova_endpoint + "/servers", headers=headers)
-        json_data = r.json()
-        print("\n----------------------------------------------------------------------")
-        print("Sve instance za korisnika: " + user_id)
-        print("----------------------------------------------------------------------")
-        for server in json_data["servers"]:
-            print(server["name"])
-        print("----------------------------------------------------------------------")
-    else:
-        print("Netocan argument: " + filter + ".\nArgument mora biti: all, active, error, build ili user id")
+    r = requests.get(nova_endpoint + "/servers", headers=headers)
+    json_data = r.json()
+    print("\n----------------------------------------------------------------------")
+    print("Sve instance za korisnika: " + user_id)
+    print("----------------------------------------------------------------------")
+    for server in json_data["servers"]:
+        print(server["name"])
+    print("----------------------------------------------------------------------")
 
 
 def list_users():
@@ -89,7 +86,7 @@ def list_users():
     print("Korisnici")
     print("----------------------------------------------------------------------")
     for user in results_json["users"]:
-        print repr(user["id"]).ljust(30) + repr(user["name"]).rjust(40)
+        print repr(user["id"]).ljust(30) + repr(user["name"]).rjust(90)
     print("----------------------------------------------------------------------\n")
 
 
@@ -115,9 +112,11 @@ def servers_changed(old_servers, new_servers):
 
 
 server_ids = []
-selected_menu_option = 2000
+server_names = []
+server_user_ids = []
+selected_menu_option = -1
 
-r = requests.get(nova_endpoint + "/servers", headers=headers)
+r = requests.get(nova_endpoint + "/servers/detail", headers=headers)
 json_data = r.json()
 for server in json_data["servers"]:
     server_ids.append(server["id"])
@@ -158,15 +157,17 @@ while(selected_menu_option != str(len(MENU_OPTIONS))):
             elif selected_submenu_option == '4':
                 list_instances("build")
             elif selected_submenu_option == '5':
-                user_id = input("Unesite id korisnika: ")
-                list_instances(user_id)
+                user_id = raw_input("Unesite id korisnika: ")
+                list_instances_for_user(user_id)
     elif selected_menu_option == '3':
         print("Za prekid ove funkcije pritisnite tipke 'Ctrl' + 'C'")
         try:
             while True:
                 for i in range(30):
                     new_server_ids = []
-                    r = requests.get(nova_endpoint + "/servers", headers=headers)
+                    new_server_names = []
+                    new_server_user_ids = []
+                    r = requests.get(nova_endpoint + "/servers/detail", headers=headers)
                     json_data = r.json()
                     for server in json_data["servers"]:
                         new_server_ids.append(server["id"])
@@ -177,14 +178,22 @@ while(selected_menu_option != str(len(MENU_OPTIONS))):
                         if len(server_ids) > len(new_server_ids):
                             print("Pobrisana je instanca: ")
                             for item in list(set(server_ids) ^ set(new_server_ids)):
-                                item_index = new_server_ids.index(item)
-                                print server_names(item_index)
+                                item_index = server_ids.index(item)
+                                r = requests.get("http://10.30.1.2:5000/v3/users/" + server_user_ids[item_index], headers=headers)
+                                results_json = r.json()
+                                user = results_json["user"]
+                                print "    - instanca: " + server_names[item_index] + " od korisnika: " + user["name"]
                         elif len(server_ids) < len(new_server_ids):
                             print("Dodana je instanca: ")
                             for item in list(set(server_ids) ^ set(new_server_ids)):
                                 item_index = new_server_ids.index(item)
-                                print server_names(item_index)
-                        servers = new_servers
+                                r = requests.get("http://10.30.1.2:5000/v3/users/" + new_server_user_ids[item_index], headers=headers)
+                                results_json = r.json()
+                                user = results_json["user"]
+                                print "    - instanca: " + new_server_names[item_index] + " od korisnika: " + user["name"]
+                        server_ids = new_server_ids
+                        server_names = new_server_names
+                        server_user_ids = new_server_user_ids
                     time.sleep(3)
         except KeyboardInterrupt:
             pass
